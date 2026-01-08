@@ -145,9 +145,6 @@ dmypy.json
 .terraform*
 .Terraform*
 
-
-tmp*
-
 # Node
 **/node_modules
 npm-debug.log
@@ -179,21 +176,13 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+tmp*
+.adk
 
 # System files
 .DS_Store
 Thumbs.db
 *.vscode*
-
-# Starter pack specific
-.persist_vector_store
-tests/load_test/.results/*.html
-tests/load_test/.results/*.csv
-.locust_env
-my_env.tfvars
-.saved_chats
-.env
-.requirements.txt
 
 # A2A Inspector
 tools/a2a-inspector/

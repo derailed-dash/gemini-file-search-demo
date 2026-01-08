@@ -1,27 +1,23 @@
 # Install dependencies using uv package manager
 install:
 	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.8.13/install.sh | sh; source $HOME/.local/bin/env; }
-	uv sync
+	uv sync --extra jupyter
 
 # Launch local dev playground
-playground:
+adk-playground:
 	@echo "==============================================================================="
 	@echo "| 🚀 Starting your agent playground...                                        |"
 	@echo "| 🔍 IMPORTANT: Select the 'app' folder to interact with your agent.          |"
 	@echo "==============================================================================="
-	uv run adk web . --port 8501 --reload_agents
+	uv run adk web app --port 8501 --reload_agents
 
-# ==============================================================================
-# Local Development Commands
-# ==============================================================================
+# Run the SDK agent (Google Search only)
+run-sdk-agent:
+	uv run python app/sdk_agent.py
 
-# Launch local development server with hot-reload
-local-backend:
-	uv run uvicorn app.fast_api_app:app --host localhost --port 8000 --reload
-
-# ==============================================================================
-# Backend Deployment Targets
-# ==============================================================================
+# Run the SDK RAG agent (File Search + Google Search)
+run-sdk-rag-agent:
+	uv run python app/sdk_rag_agent.py
 
 # Deploy the agent remotely
 # Usage: make deploy [IAP=true] [PORT=8080] - Set IAP=true to enable Identity-Aware Proxy, PORT to specify container port
@@ -38,13 +34,6 @@ deploy:
 		"COMMIT_SHA=$(shell git rev-parse HEAD)" \
 		$(if $(IAP),--iap) \
 		$(if $(PORT),--port=$(PORT))
-
-# Alias for 'make deploy' for backward compatibility
-backend: deploy
-
-# ==============================================================================
-# Testing & Code Quality
-# ==============================================================================
 
 # Run code quality checks (codespell, ruff, mypy)
 lint:

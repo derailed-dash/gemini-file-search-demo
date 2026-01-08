@@ -32,6 +32,7 @@ lint = [
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+extend-exclude = ["*.ipynb"]
 
 [tool.ruff.lint]
 select = [
@@ -65,7 +66,7 @@ ignore_missing_imports = true
 explicit_package_bases = true
 disable_error_code = ["misc", "no-untyped-call", "no-any-return"]
 
-exclude = [".venv"]
+exclude = [".venv", ".*\\.ipynb"]
 
 [tool.codespell]
 ignore-words-list = "rouge"

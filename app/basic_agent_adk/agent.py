@@ -17,13 +17,16 @@ logger = logging.getLogger(__name__)
 model = os.getenv("MODEL", "gemini-2.5-flash")
 logger.info(f"Using model: {model}")
 
+
 class SearchAgent(Agent):
     """Subclass to fix ADK app name mismatch warning."""
+
     pass
 
 
 class RootAgent(Agent):
     """Subclass to fix ADK app name mismatch warning."""
+
     pass
 
 
@@ -31,20 +34,23 @@ search_agent = SearchAgent(
     model=model,
     name="SearchAgent",
     description="Agent to perform Google Search",
-    instruction="You're a specialist in Google Search",
+    instruction="You're a specialist in Google Search. Only perform one search. Fail fast if no relevant results are found.",
     tools=[google_search],
 )
 
 root_agent = RootAgent(
-    name="root_agent",
+    name="basic_agent_adk",
     description="You are a helpful AI assistant designed to provide accurate and useful information",
     model=Gemini(
         model=model,
         retry_options=types.HttpRetryOptions(attempts=3),
     ),
     instruction="""You are a helpful AI assistant designed to provide accurate and useful information.
-    If you don't know the answer, use the SearchAgent to perform a Google search.""",
+    If you don't know the answer, use the SearchAgent to perform a Google search.
+    Do not attempt to search more than ONCE.
+    If the search yields no relevant results or returns unrelated content, you MUST immediately respond with: "I could not find any information about that."
+    Do NOT retry the search with different terms. Do NOT ask for clarification. FAIL FAST.""",
     tools=[AgentTool(agent=search_agent)],
 )
 
-app = App(root_agent=root_agent, name="app")
+app = App(root_agent=root_agent, name="basic_agent_adk")
