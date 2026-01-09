@@ -17,16 +17,11 @@ import os
 
 from google import genai
 from google.adk.agents import Agent
-from google.adk.tools import (
-    AgentTool,
-    google_search,
-)
+from google.adk.tools import AgentTool, google_search
 from google.genai import types
 
 from .tools_custom import FileSearchTool
 
-logging.getLogger("google_adk").setLevel(logging.ERROR)
-logging.getLogger("google_genai").setLevel(logging.ERROR)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
