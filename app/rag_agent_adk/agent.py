@@ -1,4 +1,17 @@
-import functools
+"""
+This module defines a multi-agent system using the Google Agent Development Kit (ADK).
+
+It implements a root agent ('rag_agent_adk') that orchestrates two specialized agents
+wrapped as tools:
+1. SearchAgent: A specialist for general information using Google Search.
+2. RagAgent: A specialist for bespoke information using Gemini File Search.
+
+Note: Sub-agents are wrapped in 'AgentTool' and passed via the 'tools' parameter rather
+than the 'sub_agents' list. This is a required workaround in the ADK to support the use
+of built-in tools (like google_search) within the agent hierarchy, which avoids the
+"Tool use with function calling is unsupported" error. This is the "Agent-as-a-Tool"
+pattern.
+"""
 import logging
 import os
 
@@ -34,15 +47,9 @@ search_agent = Agent(
 )
 
 
-@functools.cache
 def get_store_name():
     """Retrieve the store name dynamically using a temp client."""
-    client = None
-    try:
-        # Try default client (supports API_KEY)
-        client = genai.Client()
-    except Exception:
-        pass
+    client = genai.Client()
 
     if not client:
         logger.error("Could not initialize GenAI client (checked API_KEY and Vertex credentials).")
@@ -65,31 +72,40 @@ def get_store_name():
     return None
 
 
+# RAG Specialist Agent (File Search only)
+def create_rag_agent() -> Agent:
+    store_name = get_store_name()
+    if store_name:
+        logger.info(f"Creating RagAgent connected to {store_name}")
+        instruction = """Use the file_search tool to retrieve information from the knowledge base."""
+
+        return Agent(
+            model=model_id,
+            name="RagAgent",
+            description="Agent to perform retrieval from bespoke file search store",
+            instruction=instruction,
+            tools=[FileSearchTool(file_search_store_names=[store_name])],
+        )
+    else:
+        logger.warning("No File Search Store found. RagAgent will not be available.")
+        return None
+
+
 # Root Agent Configuration
 def create_root_agent():
-    store_name = get_store_name()
-
-    # tools = [AgentTool(agent=search_agent)]
-    tools = []
 
     instruction = """You are a helpful AI assistant designed to provide accurate and useful information.
-    If you don't know the answer to something, use the SearchAgent to perform a Google Search.
+    You have access to two specialist agents:
+    1. RagAgent: For bespoke information from the internal knowledge base.
+    2. SearchAgent: For general information from Google Search.
+
+    Always try the RagAgent first. If this fails to yield a useful answer, then try the SearchAgent.
     """
 
-    if store_name:
-        logger.info(f"Attaching File Search Tool connected to {store_name}")
-
-        instruction += """
-        IMPORTANT: You MUST start by searching your reference materials
-        using the 'file_search' tool for information relevant to the user's request.
-        Always use the 'file_search' tool before answering.
-        """
-
-        tools.append(FileSearchTool(file_search_store_names=[store_name]))
-    else:
-        logger.warning("No File Search Store found. Running without RAG.")
-
-    logger.info(f"Tools attached to root agent: {[t.name for t in tools]}")
+    tools = [AgentTool(agent=search_agent)]
+    rag_agent = create_rag_agent()
+    if rag_agent:
+        tools.append(AgentTool(agent=rag_agent))
 
     return Agent(
         name="rag_agent_adk",
