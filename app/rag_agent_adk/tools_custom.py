@@ -1,7 +1,23 @@
+"""
+This module defines custom tools compatible with the Google Agent Development Kit (ADK).
+Specifically, it implements the `FileSearchTool`.
+
+What it does:
+    It acts as a middleware tool that intercepts the LLM request before it is sent
+    to the model. It injects the specific `file_search` configuration (referencing a
+    File Search Store ID) directly into the `tools` parameter of the Gemini API request.
+
+Why we need it:
+    The standard ADK library provides easy access to Python functions and Google Search,
+    but we need a way to attach a persistent Gemini File Search Store (created in AI Studio)
+    to our agent. This custom tool allows us to pass that specific store ID to the model,
+    enabling RAG (Retrieval-Augmented Generation) capabilities using the native Gemini
+    File Search feature.
+"""
+
 from __future__ import annotations
 
 import logging
-import typing
 from typing import TYPE_CHECKING
 
 from google.adk.tools import BaseTool, ToolContext
@@ -27,7 +43,6 @@ class FileSearchTool(BaseTool):
             file_search_store_names: The resource name of the File Search Store.
                     e.g. ["fileSearchStores/mystore-abcdef0pqrst", ...]
         """
-        # Note: We don't define 'functions' or 'code' here because it's a server-side tool
         super().__init__(name="file_search", description="Retrieval from file search store")
         self.file_search_store_names = file_search_store_names
 
@@ -43,16 +58,9 @@ class FileSearchTool(BaseTool):
         logger.debug(f"Attaching File Search Store: {self.file_search_store_names}")
 
         llm_request.config = llm_request.config or types.GenerateContentConfig()
-        llm_request.config = llm_request.config or types.GenerateContentConfig()
-
-        # Ensure tools is a list we can append to
-        current_tools = llm_request.config.tools or []
-        # cast to list to satisfy mypy, assuming it's mutable
-        target_tools = typing.cast(list[types.Tool], current_tools)
+        llm_request.config.tools = llm_request.config.tools or []
 
         # Append the native tool configuration for File Search
-        target_tools.append(
+        llm_request.config.tools.append(
             types.Tool(file_search=types.FileSearch(file_search_store_names=self.file_search_store_names))
         )
-        # Cast back to Any to satisfy the complex Union expected by GenerateContentConfig.tools
-        llm_request.config.tools = typing.cast(list[typing.Any], target_tools)

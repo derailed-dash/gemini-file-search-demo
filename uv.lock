@@ -558,18 +558,18 @@ lint = [
 [package.metadata]
 requires-dist = [
     { name = "codespell", marker = "extra == 'lint'" },
-    { name = "fastapi", specifier = "~=0.115.8" },
-    { name = "google-adk", specifier = ">=1.15.0,<2.0.0" },
-    { name = "google-cloud-aiplatform", extras = ["adk"], specifier = ">=1.118.0,<2.0.0" },
-    { name = "google-cloud-logging", specifier = ">=3.12.0,<4.0.0" },
+    { name = "fastapi" },
+    { name = "google-adk" },
+    { name = "google-cloud-aiplatform", extras = ["adk"] },
+    { name = "google-cloud-logging" },
     { name = "google-genai" },
     { name = "ipython", marker = "extra == 'jupyter'" },
-    { name = "jupyter", marker = "extra == 'jupyter'", specifier = ">=1.0.0,<2.0.0" },
+    { name = "jupyter", marker = "extra == 'jupyter'" },
     { name = "mypy", marker = "extra == 'lint'" },
     { name = "ruff", marker = "extra == 'lint'" },
     { name = "types-pyyaml", marker = "extra == 'lint'" },
     { name = "types-requests", marker = "extra == 'lint'" },
-    { name = "uvicorn", specifier = "~=0.34.0" },
+    { name = "uvicorn" },
 ]
 provides-extras = ["jupyter", "lint"]
 

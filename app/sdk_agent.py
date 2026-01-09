@@ -1,3 +1,22 @@
+"""
+Native SDK Basic Agent (Google Search Only)
+
+This script demonstrates a minimal "Agent" using the raw Google Gen AI SDK.
+
+WHAT:
+A simple CLI chatbot that uses Gemini 2.5 Flash and the native Google Search tool.
+
+WHY:
+To establish a baseline for "native" (non-framework) implementation. It highlights
+how easy it is to attach the `GoogleSearch` tool to a model.
+
+HOW:
+1.  Instantiates `genai.Client()`.
+2.  Creates a chat session with `config=types.GenerateContentConfig(tools=[...])`.
+3.  Uses the built-in `types.GoogleSearch()` tool.
+4.  Runs a simple REPL loop for user interaction.
+"""
+
 import logging
 import os
 
@@ -19,9 +38,7 @@ def main():
     # 1. Initialize the client
     client = genai.Client()
 
-    # 2. Define the tool
-    # The 'google_search_retrieval' tool is a built-in tool in the Gemini API.
-    # We configure it within the GenerateContentConfig.
+    # 2. Add Google Search tool
     google_search_tool = types.Tool(google_search=types.GoogleSearch())
 
     # 3. Create the chat session

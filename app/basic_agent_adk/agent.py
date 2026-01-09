@@ -1,8 +1,28 @@
+"""
+ADK Basic Agent (Google Search Only)
+
+This module defines an agent using the Google Agent Development Kit (ADK).
+
+WHAT:
+A structured agent that uses Gemini and Google Search to answer user queries.
+It features a "fail-fast" mechanism to prevent infinite search loops on fictional topics.
+
+WHY:
+To demonstrate the ADK's `Agent` and `App` architectural patterns. ADK provides
+structure, state management, and easier deployment (via `adk run`) compared to
+raw scripts.
+
+HOW:
+1.  Defines a `SearchAgent` subclass (mostly for declarative structure).
+2.  Defines a `RootAgent` that delegates to the `SearchAgent`.
+3.  Uses strict system instructions to "FAIL FAST" if search yields no results.
+4.  Exposes an `app` object that the ADK runner discovers and serves.
+"""
+
 import logging
 import os
 
 from google.adk.agents import Agent
-from google.adk.apps.app import App
 from google.adk.models import Gemini
 from google.adk.tools import (
     AgentTool,
@@ -18,19 +38,7 @@ model = os.getenv("MODEL", "gemini-2.5-flash")
 logger.info(f"Using model: {model}")
 
 
-class SearchAgent(Agent):
-    """Subclass to fix ADK app name mismatch warning."""
-
-    pass
-
-
-class RootAgent(Agent):
-    """Subclass to fix ADK app name mismatch warning."""
-
-    pass
-
-
-search_agent = SearchAgent(
+search_agent = Agent(
     model=model,
     name="SearchAgent",
     description="Agent to perform Google Search",
@@ -38,7 +46,7 @@ search_agent = SearchAgent(
     tools=[google_search],
 )
 
-root_agent = RootAgent(
+root_agent = Agent(
     name="basic_agent_adk",
     description="You are a helpful AI assistant designed to provide accurate and useful information",
     model=Gemini(
@@ -53,4 +61,3 @@ root_agent = RootAgent(
     tools=[AgentTool(agent=search_agent)],
 )
 
-app = App(root_agent=root_agent, name="basic_agent_adk")

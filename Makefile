@@ -7,16 +7,15 @@ install:
 adk-playground:
 	@echo "==============================================================================="
 	@echo "| 🚀 Starting your agent playground...                                        |"
-	@echo "| 🔍 IMPORTANT: Select the 'app' folder to interact with your agent.          |"
 	@echo "==============================================================================="
 	uv run adk web app --port 8501 --reload_agents
 
 # Run the SDK agent (Google Search only)
-run-sdk-agent:
+sdk-agent:
 	uv run python app/sdk_agent.py
 
 # Run the SDK RAG agent (File Search + Google Search)
-run-sdk-rag-agent:
+sdk-rag-agent:
 	uv run python app/sdk_rag_agent.py
 
 # Deploy the agent remotely
