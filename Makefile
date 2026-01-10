@@ -18,22 +18,6 @@ sdk-agent:
 sdk-rag-agent:
 	uv run python app/sdk_rag_agent.py
 
-# Deploy the agent remotely
-# Usage: make deploy [IAP=true] [PORT=8080] - Set IAP=true to enable Identity-Aware Proxy, PORT to specify container port
-deploy:
-	PROJECT_ID=$$(gcloud config get-value project) && \
-	gcloud beta run deploy gemini-file-search-demo \
-		--source . \
-		--memory "4Gi" \
-		--project $$PROJECT_ID \
-		--region "us-central1" \
-		--no-allow-unauthenticated \
-		--update-build-env-vars "AGENT_VERSION=$(shell awk -F'"' '/^version = / {print $$2}' pyproject.toml || echo '0.0.0')" \
-		--update-env-vars \
-		"COMMIT_SHA=$(shell git rev-parse HEAD)" \
-		$(if $(IAP),--iap) \
-		$(if $(PORT),--port=$(PORT))
-
 # Run code quality checks (codespell, ruff, mypy)
 lint:
 	uv sync --dev --extra lint
