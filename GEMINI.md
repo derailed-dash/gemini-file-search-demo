@@ -7,7 +7,7 @@ It is based on my blog [Using Gemini File Search Tool for RAG (a Rickbot Blog)](
 ## Key Links
 
 - [This Repo](https://github.com/derailed-dash/gemini-file-search-demo)
-- [My related blog - Using Gemini File Search Tool for RAG (a Rickbot Blog)](https://medium.com/google-cloud/using-gemini-file-search-tool-for-rag-a-rickbot-blog-b6c4f117e5d3). This is a draft.
+- [My related blog - Using Gemini File Search Tool for RAG (a Rickbot Blog)](https://medium.com/google-cloud/using-gemini-file-search-tool-for-rag-a-rickbot-blog-b6c4f117e5d3).
 - [Google Codelabs](https://codelabs.developers.google.com/)
 - [This Codelab](https://codelabs.developers.google.com/gemini-file-search-for-rag) - This does not yet exist.
 
@@ -27,5 +27,15 @@ It is based on my blog [Using Gemini File Search Tool for RAG (a Rickbot Blog)](
 
 ## Rules
 
-- The README.md will provide identical content to the Codelab walkthrough.
-- Each H1 of the MD will represent the next section of the codelab.
+- The `README.md` will provide identical content to the Codelab walkthrough.
+- Each H1 of the `README.md` will represent the next section of the codelab.
+
+## Example Codelabs
+
+Here are some other codelabs that can be used for inspiration in terms of structure and guidance. Read these and use them for inspiration and guidance. However, I will use my own conversational style.
+
+- [Create multi agent system with ADK, deploy in Agent Engine and get started with A2A protocol](https://codelabs.developers.google.com/codelabs/create-multi-agents-adk-a2a)
+- [Developing LLM Apps with the Vertex AI SDK](https://codelabs.developers.google.com/codelabs/production-ready-ai-with-gc/1-developing-apps-that-use-llms/developing-LLM-apps-with-Vertex-AI-SDK)
+- [ADK:From Basics to Multi-Tool Agents](https://codelabs.developers.google.com/multi-tools-ai-agent-adk)
+- [Build your own "Bargaining Shopkeeper" Agent with Gemini 3 and ADK](https://codelabs.developers.google.com/agentic-app-gemini-3-adk)
+- [Building Agents with Retrieval-Augmented Generation](https://codelabs.developers.google.com/codelabs/production-ready-ai-with-gc/7-advanced-agent-capabilities/building-agents-with-retrieval-augmented-generation?hl=en#0)
