@@ -4,7 +4,6 @@ Native SDK RAG Agent with Gemini File Search Tool
 
 import logging
 import os
-from typing import Any
 
 from dotenv import load_dotenv
 from google import genai

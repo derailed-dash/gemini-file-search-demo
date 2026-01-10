@@ -60,4 +60,3 @@ root_agent = Agent(
     Do NOT retry the search with different terms. Do NOT ask for clarification. FAIL FAST.""",
     tools=[AgentTool(agent=search_agent)],
 )
-

@@ -4,7 +4,7 @@
 
 - This repo: [gemini-file-search-demo](https://github.com/derailed-dash/gemini-file-search-demo)
 - Author: Darren "Dazbo" Lester
-- Created: 2024-01-10
+- Created: 2026-01-10
 
 ## Key Links
 
@@ -23,8 +23,9 @@ This codelab will teach you how to use the Gemini File Search Tool for RAG.
 - ✅ How to create a File Search Store.
 - ✅ How to upload your own bespoke files to the File Search Store.
 - ✅ How to use the Gemini File Search Tool for RAG.
+- ✅ The benefits of using the Google Agent Development Kit (ADK).
+- ✅ How to use the Gemini File Search Tool in an agentic solution built using the ADK.
 - ✅ How to use the Gemini File Search Tool alongside Google "native" tools like Google Search.
-- ✅ How to use the Gemini File Search Tool in an agentic solution build using the Google Agent Development Kit (ADK).
 
 ## What You'll Do
 
@@ -122,7 +123,7 @@ gemini-file-search-demo/
 
 Open this folder in Cloud Shell Editor, or your preferred editor. (Have you used Antigravity yet? If not, now would be a good time to [try it out](https://medium.com/google-cloud/tutorial-getting-started-with-google-antigravity-b5cc74c103c2).)
 
-Note that the repo contains a sample story - _"The Wormhole Incursion"_ - in the file `data/story.md`. I co-wrote it with Gemini! It's about Commander Dazbo and his squadron of sentient starships. (I drew some inspiration from the game Elite Dangerous.)This story serves as our 'bespoke knowledge base', containing specific facts about that Gemini does not know, and furthermore, that it can't search for using a Google search.
+Note that the repo contains a sample story - _"The Wormhole Incursion"_ - in the file `data/story.md`. I co-wrote it with Gemini! It's about Commander Dazbo and his squadron of sentient starships. (I drew some inspiration from the game Elite Dangerous.) This story serves as our 'bespoke knowledge base', containing specific facts that Gemini does not know, and furthermore, that it can't search for using a Google search.
 
 ## Setup Your Development Environment
 
@@ -243,20 +244,20 @@ The storing and querying of your embeddings is **free**. So you can store embedd
 
 In fact, the only thing you do pay for is the creation of the embeddings at upload/indexing time. At the time of writing, this costs $0.15 per 1 million tokens. That’s pretty cheap.
 
-## How Do We Use It?
+# How Do We Use Gemini File Search?
 
 There are two phases:
 
 1. Create and store the embeddings, in a File Search Store.
 2. Query the File Search Store from your agent.
 
-# Phase 1 - Jupyter Notebook to Create and Manage a Gemini File Search Store
+## Phase 1 - Jupyter Notebook to Create and Manage a Gemini File Search Store
 
 This phase is something you would do initially, and then whenever you want to update the store. For example, when you have new documents to add, or when the source documents have changed.
 
 This phase is not something you need to package into your _deployed agentic application_. Sure, you could if you want to. For example, if you want to create some sort of UI for admin users of your agentic application. But it is often perfectly adequate to have a bit of code that you run on-demand. And one great way to run this code on-demand?  A Jupyter notebook!
 
-## The Notebook
+### The Notebook
 
 Open the file `notebooks/file_search_store.ipynb` in your editor. If we open it in the Cloud Shell Editor, it looks like this:
 
@@ -269,7 +270,7 @@ Let's run it cell by cell. Start by executing the _Setup_ cell with the required
 Then:
 
 - Run the _Local Only_ cell to pull in the environment variables.
-- Run the cell to initialse the Gemini Gen AI Client.
+- Run the cell to initialise the Gemini Gen AI Client.
 - Run the cell with the helper function for retrieving Gemini File Search Store by name.
 
 Now we're ready to create the store! 
@@ -279,99 +280,186 @@ Now we're ready to create the store!
 
 Great! We now have a Gemini File Search store ready to go.
 
-## The Data (`data/story.md`)
+### Uploading the Data
 
 We want to upload `data/story.md` to the store. Do the following:
 
-- Run the cell to set the upload path. This points to our `data/` folder.
-- Then run the next cell, which creates utility functions for uploading files to the store. Note that I'm using Gemini... TBC.
+- Run the cell that sets the upload path. This points to our `data/` folder.
+- run the next cell, which creates utility functions for uploading files to the store. Note that the code in this cell also uses Gemini to extract metadata from each uploaded file. We take these extracted values and store them as custom metadata in the store.
+- Run the cell to upload the file. Note that if we've uploaded a file with the same name before, then the notebook will first delete the existing version before uploading the new one. You should see a message indicating that the file has been uploaded.
 
-# Implement Gemini File Search RAG in our Agent
+![File Uploaded](media/file-uploaded.png)
 
-Now we have a store, let's access it.
+## Implement Gemini File Search RAG in our Agent
 
-### Running It
-Set your environment variables (create a `.env` file):
-```bash
-STORE_NAME=your-store-name-from-notebook
-GEMINI_API_KEY=your-key
+We've created a Gemini File Search Store and uploaded our story to it. Now it's time to use the File Search Store in our agent. Let's create a new agent that uses the File Search Store rather than Google Search. Take a look at `app/sdk_rag_agent.py`.
+
+The first thing to note is that we've implemented a function to retrieve our store by passing in a store name:
+
+```python
+def get_store(client: genai.Client, store_name: str) -> types.FileSearchStore | None:
+    """Retrieve a store by display name"""
+    try:
+        for a_store in client.file_search_stores.list():
+            if a_store.display_name == store_name:
+                return a_store
+    except Exception as e:
+        logger.error(f"Error listing stores: {e}")
+    return None
 ```
 
-Run the agent:
+Once we have our store, using it is as simple as attaching it as a tool to our agent, like this:
+
+```python
+    file_search_tool = types.Tool(file_search=types.FileSearch(file_search_store_names=[store.name]))
+```
+
+## Running the RAG Agent
+
+We launch it like this:
+
 ```bash
 make sdk-rag-agent
+
+# Or, without make:
+uv run python app/sdk_rag_agent.py
 ```
 
-Ask it again:
-> "Who pilots the 'Too Many Pies' ship?"
+Let's ask the question that the previous agent couldn't answer:
 
-**Success!** It should now tell you it's an Anaconda, referencing information from "File Search".
+```text
+> Who pilots the 'Too Many Pies' ship?
+```
 
-# Convert our Agent to an ADK Agent
+And the response?
 
-Scripts are fine for demos, but for production, we want structure. We want the **Google Agent Development Kit (ADK)**.
+![RAG Agent response](media/rag-grounded-answer.png)
 
-### The Basic ADK Agent (`app/basic_agent_adk/agent.py`)
-This mimics our first agent but uses ADK classes.
-- **SearchAgent**: An `Agent` configured with `google_search`.
-- **RootAgent**: Delegates to the `SearchAgent`.
-- **Performance**: It uses "fail-fast" instructions to stop it from spiralling if it can't find an answer.
+**Success!** We can see from the response that:
 
-Run it with the ADK playground:
+- Our file store was used to answer the question.
+- 5 relevant chunks were found.
+- The answer is spot on!
+
+Type `quit` to close the agent.
+
+# Converting our Agents to use ADK
+
+The ADK is an open source modular framework and SDK for developers to build agents and agentic systems. It allows us to create and orchestrate multi-agent systems with ease. While optimized for Gemini and the Google ecosystem, ADK is model-agnostic, deployment-agnostic, and is built for compatibility with other frameworks. If you haven't used ADK yet, then head over to the [ADK Docs](https://google.github.io/adk-docs/) to find out more.
+
+## The Basic ADK Agent with Google Search
+
+Take a look at `app/basic_agent_adk/agent.py`. In this sample code you can see that we've actually implemented two agents:
+
+1. A `root_agent` that handles the interaction with the user, and where we've provided the main system instruction.
+2. A separate `SearchAgent` that uses `google.adk.tools.google_search` as a tool.
+
+The `root_agent` actually uses the `SearchAgent` as a tool, which is implemented using this line:
+
+```python
+    tools=[AgentTool(agent=search_agent)],
+```
+
+The root agent's system prompt looks like this:
+
+```text
+You are a helpful AI assistant designed to provide accurate and useful information.
+If you don't know the answer, use the SearchAgent to perform a Google search.
+Do not attempt to search more than ONCE.
+If the search yields no relevant results or returns unrelated content, you MUST immediately respond with: "I could not find any information about that."
+Do NOT retry the search with different terms. Do NOT ask for clarification. FAIL FAST.
+```
+
+## Trying the Agent
+
+The ADK provides a number of out-of-the-box interfaces to allow developers to test their ADK agents. One of these interfaces is the Web UI. This allows us to test our agents in a browser, without having to write a line of user interface code!
+
+We can launch this interface by running:
+
 ```bash
 make adk-playground
+
+# Or, without make:
+uv run adk web app --port 8501 --reload_agents
 ```
 
-# Incorporate the File Search Store into the ADK agent
+Note that the command points the `adk web` tool to the `app` folder, where it will automatically discover any ADK agents that implement a `root_agent`. So let's try it out:
 
-Now for the final form. A hierarchical agent using ADK + RAG.
+![ADK Web](media/adk-web.png)
 
-### The ADK RAG Agent (`app/rag_agent_adk/agent.py`)
-We have a root agent that orchestrates two specialists:
-1.  **RagAgent**: Your bespoke knowledge expert.
-2.  **SearchAgent**: Your general knowledge expert.
+After a couple of seconds, the application is ready. If you're running the code locally, just point your browser to `http://127.0.0.1:8501`. If you're running in the Cloud Shell Editor, click on "Web preview", and change the port to `8501`:
 
-### The Custom Tool (`app/rag_agent_adk/tools_custom.py`)
-Since ADK doesn't have a built-in wrapper for `FileSearch` yet, I wrote a custom middleware class `FileSearchTool`. It injects the `file_search_store_names` configuration into the low-level model request.
+![Web preview](media/web-preview.png)
 
-### The "Tool-as-an-Agent" Pattern (`app/sdk_rag_agent.py`)
-Here's a "gotcha" to watch out for. At the time of writing, you **cannot** use the native `GoogleSearch` tool and the `FileSearch` tool in the same request. You get a `400 INVALID_ARGUMENT` error.
+When the UI appears, select the `basic_agent_adk` from the dropdown, and then we can ask it questions:
 
-**The Solution:**
-We use a pattern called **Tool-as-an-Agent**.
-1.  We define a Python function `google_search_tool(query)`.
-2.  Inside this function, we spin up a *sub-agent* (a fresh `genai.Client`).
-3.  This sub-agent uses the native Google Search tool to get the verified answer.
-4.  Our main agent treats this function as just a regular user tool, so it plays nicely with `FileSearch`.
+![Basic ADK Agent Search](media/basic-adk-agent-search.gif)
 
-### Final Test
-1.  Ensure your `STORE_NAME` is set in the `.env` file!
-2.  Run the playground:
-    ```bash
-    make adk-playground
-    ```
-3.  Switch to the `rag_agent_adk` in the UI.
-4.  Ask about "Too Many Pies". Observe the `RagAgent` taking the lead.
-5.  Ask about "Google Stock". Observe the `SearchAgent` taking over.
+So far, so good! The web UI even shows you when the root agent is delegating to the `SearchAgent`. This is a very useful feature.
 
-# Conclusion
+Now let's ask it our question that requires knowledge of our story:
 
-We've gone from a simple script to a fully agentic, RAG-enabled system without touching a vector database.
+![Basic ADK Agent has no knowledge of our story](media/basic-adk-fail.png)
 
-We learned:
-- **Managed RAG** saves time and sanity.
-- **The "Tool-as-an-Agent" pattern** solves tool compatibility issues.
-- **ADK** gives us the structure we need for complex apps.
+Try it yourself. You should find it _fails fast_, just as directed.
 
-Now, if you'll excuse me, I'm going to find a pina colada. Or maybe just a cup of tea.
+## Incorporate the File Search Store into the ADK agent
 
-# Appendix (Ultimately to be deleted from this file)
+Now we're going to bring it all together. We're going to run an ADK agent that is able to use both the File Search Store and Google Search. Take a look at the code in `app/rag_agent_adk/agent.py`.
 
-## Running Google Search and Gemini File Search together:
+The code is similar to the previous example, but with a few key differences:
 
-Error without the Agent-As-A-Tool pattern:
+1. We have a root agent that orchestrates two specialist agents:
+    1. **RagAgent**: The bespoke knowledge expert - using our Gemini File Search Store
+    2. **SearchAgent**: The general knowledge expert - using Google Search
+2. Because ADK doesn't have a built-in wrapper for `FileSearch` yet, we use a custom wrapper class `FileSearchTool` to wrap the `FileSearch` tool, which injects the `file_search_store_names` configuration into the low-level model request. This has been implemented into the separate script `app/rag_agent_adk/tools_custom.py`.
+
+Also, there's a "gotcha" to watch out for. At the time of writing, you cannot use the native `GoogleSearch` tool and the `FileSearch` tool in the same request to the same agent. If you try, you'll get an error like this:
 
 ```text
 ERROR - An error occurred: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Search as a tool and file search tool are not supported together', 'status': 'INVALID_ARGUMENT'}}
 Error: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Search as a tool and file search tool are not supported together', 'status': 'INVALID_ARGUMENT'}}
 ```
+
+The solution is to implement the two specialist agents as separate subagents, and pass them to the root agent using the _Agent-as-a-Tool_ pattern. And crucially, the root agent's system instruction provides very clear guidance to use the `RagAgent` first:
+
+```text
+You are a helpful AI assistant designed to provide accurate and useful information.
+You have access to two specialist agents:
+1. RagAgent: For bespoke information from the internal knowledge base.
+2. SearchAgent: For general information from Google Search.
+
+Always try the RagAgent first. If this fails to yield a useful answer, then try the SearchAgent.
+```
+
+## Final Test
+
+Run the ADK web UI as before:
+
+```bash
+make adk-playground
+
+# Or, without make:
+uv run adk web app --port 8501 --reload_agents
+```
+
+This time, select `rag_agent_adk` in the UI. Let's see it in action:
+
+![ADK Rag Agent](media/adk_rag_agent.gif)
+
+We can see it picks the appropriate subagent based on the question.
+
+# Conclusion
+
+Congratulations on completing this codelab!
+
+You've gone from a simple script to a multi-agent RAG-enabled system; all without a single line of embedding code, and without having to implement a vector database!
+
+We learned:
+
+- **Gemini File Search** is a managed RAG solution that saves time and sanity.
+- **ADK** gives us the structure we need for complex multi-agent apps, and provides developer convenience through interfaces like the Web UI.
+- **The "Agent-as-a-Tool" pattern** solves tool compatibility issues.
+
+Now, if you'll excuse me, I'm going to find a pina colada. Or maybe just a cup of tea.
+

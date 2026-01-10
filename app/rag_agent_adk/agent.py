@@ -47,13 +47,13 @@ def get_store_name():
     client = genai.Client()
 
     if not client:
-        logger.error("Could not initialize GenAI client (checked API_KEY and Vertex credentials).")
+        logger.error("Could not initialize GenAI client.")
         return None
 
     try:
         if not STORE_NAME:
-             logger.warning("STORE_NAME env var is not set.")
-             return None
+            logger.warning("STORE_NAME env var is not set.")
+            return None
 
         logger.info(f"Looking for File Search Store: {STORE_NAME}...")
         for a_store in client.file_search_stores.list():
