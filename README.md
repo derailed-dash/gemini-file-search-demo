@@ -6,6 +6,8 @@
 - Author: Darren "Dazbo" Lester
 - Created: 2026-01-10
 
+If you use this repo and you find it useful, please consider giving it a star in GitHub.
+
 ## Key Links
 
 - [My related blog - Using Gemini File Search Tool for RAG (a Rickbot Blog)](https://medium.com/google-cloud/using-gemini-file-search-tool-for-rag-a-rickbot-blog-b6c4f117e5d3).
