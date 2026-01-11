@@ -79,7 +79,7 @@ But friends don't let friends over-engineer things. What if I told you there's a
 
 You need a Google Cloud Project to run this codelab. You can use a project you already have, or [create a new one](https://console.cloud.google.com/projectcreate). 
 
-Make sure [billing](https://console.cloud.google.com/billing) is enabled on your project. See [this guide](https://docs.cloud.google.com/billing/docs/how-to/verify-billing-enabled) to see how to check billing status of your projects.
+Make sure [billing](https://console.cloud.google.com/billing) is enabled on your project. See [this guide](https://docs.cloud.google.com/billing/docs/how-to/verify-billing-enabled) to see how to check the billing status of your projects.
 
 _Note that completing this codelab is not expected to cost you anything. At most, a few pennies._
 
@@ -121,7 +121,7 @@ gemini-file-search-demo/
 
 Open this folder in Cloud Shell Editor, or your preferred editor. (Have you used Antigravity yet? If not, now would be a good time to [try it out](https://medium.com/google-cloud/tutorial-getting-started-with-google-antigravity-b5cc74c103c2).)
 
-Note that the repo contains a sample story - _"The Wormhole Incursion"_ - in the file `data/story.md`. I co-wrote it with Gemini! It's about Commander Dazbo and his squadron of sentient starships. (I drew some inspiration from the game Elite Dangerous.) This story serves as our 'bespoke knowledge base', containing specific facts that Gemini does not know, and furthermore, that it can't search for using a Google search.
+Note that the repo contains a sample story - _"The Wormhole Incursion"_ - in the file `data/story.md`. I co-wrote it with Gemini! It's about Commander Dazbo and his squadron of sentient starships. (I drew some inspiration from the game _Elite Dangerous_.) This story serves as our 'bespoke knowledge base', containing specific facts that Gemini does not know, and furthermore, that it can't search for using a Google search.
 
 ## Setup Your Development Environment
 
@@ -197,7 +197,7 @@ It should answer correctly using Google Search to find the current price:
 
 ![Google Search to get current stock price](media/basic_agent_google_search.png)
 
-Now, let's ask it a question it doesn't know how to answer. It requires the agent to have read our story.
+Now, let's ask a question it doesn't know how to answer. It requires the agent to have read our story.
 
 ```text
 > Who pilots the 'Too Many Pies' ship?
@@ -220,7 +220,7 @@ Gemini File Search is essentially a combination of two things:
 1. **A fully-managed RAG system**: you provide a bunch of files, and Gemini File Search handles the chunking, embedding, storing and vector indexing for you.
 2. **A “tool” in the agentic sense**: where you can simply add Gemini File Search Tool as a tool in your agent definition, and point the tool to a File Search Store.
 
-But crucially: **it’s built into the Gemini API itself**. That means you don’t need to enable any additional APIs or deploy any separate products to use it. So it really is… out-of-the-box.
+But crucially: **it’s built into the Gemini API itself**. That means you don’t need to enable any additional APIs or deploy any separate products to use it. So it really is _out-of-the-box_.
 
 ## Gemini File Search Features
 
@@ -238,7 +238,7 @@ The answer: a **File Search Store**. This is a fully-managed container for your 
 
 ## It's Cheap!
 
-The storing and querying of your embeddings is **free**. So you can store embeddings for as long as you like, and you don’t pay for that storage!
+The **storing and querying of your embeddings is free**. So you can store embeddings for as long as you like, and you don’t pay for that storage!
 
 In fact, the only thing you do pay for is the creation of the embeddings at upload/indexing time. At the time of writing, this costs $0.15 per 1 million tokens. That’s pretty cheap.
 
@@ -267,11 +267,11 @@ Let's run it cell by cell. Start by executing the _Setup_ cell with the required
 
 Then:
 
-- Run the _Local Only_ cell to pull in the environment variables.
+- Run the _"Local Only"_ cell to pull in the environment variables.
 - Run the cell to initialise the Gemini Gen AI Client.
 - Run the cell with the helper function for retrieving Gemini File Search Store by name.
 
-Now we're ready to create the store! 
+Now we're ready to create the store. 
 
 - Run the cell to create the store. We only need to do this once.
 - Run the _View Store_ cell to see what's in it. At this point, you should see that it contains 0 documents. 
@@ -283,7 +283,7 @@ Great! We now have a Gemini File Search store ready to go.
 We want to upload `data/story.md` to the store. Do the following:
 
 - Run the cell that sets the upload path. This points to our `data/` folder.
-- run the next cell, which creates utility functions for uploading files to the store. Note that the code in this cell also uses Gemini to extract metadata from each uploaded file. We take these extracted values and store them as custom metadata in the store.
+- Run the next cell, which creates utility functions for uploading files to the store. Note that the code in this cell also uses Gemini to extract metadata from each uploaded file. We take these extracted values and store them as custom metadata in the store. (You don't need to do this, but it's a useful thing to do.)
 - Run the cell to upload the file. Note that if we've uploaded a file with the same name before, then the notebook will first delete the existing version before uploading the new one. You should see a message indicating that the file has been uploaded.
 
 ![File Uploaded](media/file-uploaded.png)
@@ -459,5 +459,4 @@ We learned:
 - **ADK** gives us the structure we need for complex multi-agent apps, and provides developer convenience through interfaces like the Web UI.
 - **The "Agent-as-a-Tool" pattern** solves tool compatibility issues.
 
-Now, if you'll excuse me, I'm going to find a pina colada. Or maybe just a cup of tea.
-
+Hope you've found this lab useful. See you next time!
