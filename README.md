@@ -75,8 +75,6 @@ But friends don't let friends over-engineer things. What if I told you there's a
 
 # Prerequisites
 
-Let's get the boring stuff out of the way. You can't build a spaceship without a wrench.
-
 ## Create a Google Cloud Project
 
 You need a Google Cloud Project to run this codelab. You can use a project you already have, or [create a new one](https://console.cloud.google.com/projectcreate). 
