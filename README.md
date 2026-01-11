@@ -14,7 +14,7 @@
 
 # Introduction
 
-This codelab will teach you how to use the Gemini File Search Tool for RAG.
+This codelab shows you how to use Gemini File Search to enable RAG in your Agentic Application. You'll use the Gemini File Search to ingest and index your documents without having to worry about the details of chunking, embedding or vector database.
 
 ## What You'll Learn
 
@@ -290,7 +290,7 @@ We want to upload `data/story.md` to the store. Do the following:
 
 ![File Uploaded](media/file-uploaded.png)
 
-## Implement Gemini File Search RAG in our Agent
+## Phase 2 - Implement Gemini File Search RAG in our Agent
 
 We've created a Gemini File Search Store and uploaded our story to it. Now it's time to use the File Search Store in our agent. Let's create a new agent that uses the File Search Store rather than Google Search. Take a look at `app/sdk_rag_agent.py`.
 
