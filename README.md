@@ -10,9 +10,9 @@ If you use this repo and you find it useful, please consider giving it a star in
 
 ## Key Links
 
+- [This Codelab](https://codelabs.developers.google.com/gemini-file-search-for-rag)
 - [My related blog - Using Gemini File Search Tool for RAG (a Rickbot Blog)](https://medium.com/google-cloud/using-gemini-file-search-tool-for-rag-a-rickbot-blog-b6c4f117e5d3).
-- [Google Codelabs](https://codelabs.developers.google.com/)
-- [This Codelab](https://codelabs.developers.google.com/gemini-file-search-for-rag) - This does not yet exist.
+- [More Google Codelabs](https://codelabs.developers.google.com/)
 
 # Introduction
 
